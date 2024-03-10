@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" id="mainPage">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Paypal Purchase</title>
+  </head>
+  <body>
+    <div id="pageLoader">
+      <div id="loadingIcon"></div>
+    </div>
+    <h1>Please select<br> a purchase method</h1>
+    <div id="paypal-button-container"></div>
+  </body>
+  <script src="https://www.paypal.com/sdk/js?client-id=AaJFEuTKJ9fjWEZ6VHXQWLo7_uyfm4FbpqsJFzVyGqcJGYvQUR3C_rUImhaerDe-5LEAZg4LHzVOtwib"></script>
+  <script>
+    var orderID = "not_created";
+    var loadingOverlay = document.getElementById("pageLoader");
+    var mainPage = document.getElementById("mainPage");
+    DisableScreen(true);
+
+    function SetOrderID(incomingOrderID) {
+      orderID = incomingOrderID;
+      shouldRequestOrderID = false;
+      DisableScreen(false);
+    }
+
+    function DisableScreen(state) {
+      if (state == true) {
+        loadingOverlay.style.display = "initial";
+        mainPage.style.pointerEvents = "none";
+        mainPage.style.userSelect = "none";
+      } else {
+        loadingOverlay.style.display = "none";
+        mainPage.style.pointerEvents = "all";
+        mainPage.style.userSelect = "text";
+      }
+    }
+    var shouldRequestOrderID = false;
+
+    function isRequireOrderID() {
+      return shouldRequestOrderID;
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded');
+      shouldRequestOrderID = true;
+    });
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'gold',
+        tagline: 'false',
+      },
+      createOrder() {
+        return orderID;
+      },
+      onApprove: (data, actions) => {
+        window.location.href = "/StreamingAssets/PurchaseHTML/Success.html"
+        /* return fetch(`@Url.Action("Capture")?orderId=${data.orderID}`, {
+            method: "post",
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then(error => { throw error; });
+            }
+
+            window.location.href = "/StreamingAssets/PurchaseHTML/Success.html";
+        }).catch(error => alert(error.message));*/
+      }
+    }).render('#paypal-button-container')
+  </script>
+</html>
